@@ -1,0 +1,34 @@
+{
+  "name": "fur",
+  "version": "1.0.0",
+  "description": "Agnostic controller for fuzzy finders.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/rosshadden/fur.git"
+  },
+  "keywords": [
+    "fuzzy",
+    "filter",
+    "fzf",
+    "dmenu",
+    "rofi",
+    "pick",
+    "selecta"
+  ],
+  "author": "Ross Hadden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rosshadden/fur/issues"
+  },
+  "homepage": "https://github.com/rosshadden/fur#readme",
+  "dependencies": {
+    "yargs": "^13.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^12.6.2"
+  }
+}
