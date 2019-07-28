@@ -52,22 +52,26 @@ async function main() {
 				},
 			},
 			async (argv) => {
-				if (!modules[argv.module]) throw new Error(`Group not found: ${argv.module}`);
-				if (!modules[argv.module][argv.id]) throw new Error(`ID not found in group: ${argv.id}`);
-				const cmd = modules[argv.module][argv.id];
-
-				const list = proc.exec(cmd);
-				const finder = proc.spawn(argv.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
-
-				list.stdout.pipe(finder.stdin);
-
-				for await (const data of finder.stdout) {
-					const output = data.toString().trim()
-					console.log(output);
-				}
+				const result = await getHandler(argv.module, argv.id, argv);
+				console.log(result);
 			},
 		)
 	.argv;
+}
+
+async function getHandler(mod, id, options) {
+	if (!modules[mod]) throw new Error(`Group not found: ${mod}`);
+	if (!modules[mod][id]) throw new Error(`ID not found in group: ${id}`);
+	const cmd = modules[mod][id];
+
+	const list = proc.exec(cmd);
+	const finder = proc.spawn(options.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
+
+	list.stdout.pipe(finder.stdin);
+
+	for await (const data of finder.stdout) {
+		return data.toString().trim();
+	}
 }
 
 main();
