@@ -37,7 +37,7 @@ async function main() {
 			},
 		)
 		.command(
-			'get <module> <id>',
+			[ 'get <module> <id>', '$0 <module> <id>' ],
 			'Get one result from an input list for a given <id>, typically via user input through a fuzzy finder.',
 			{
 				d: {
