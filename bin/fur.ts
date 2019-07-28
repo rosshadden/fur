@@ -82,22 +82,7 @@ async function main() {
 	.argv;
 }
 
-async function getHandler(mod, id, options) {
-	if (!modules[mod]) throw new Error(`Group not found: ${mod}`);
-	if (!modules[mod][id]) throw new Error(`ID not found in group: ${id}`);
-	const cmd = modules[mod][id];
-
-	const list = proc.exec(cmd);
-	const finder = proc.spawn(options.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
-
-	list.stdout.pipe(finder.stdin);
-
-	for await (const data of finder.stdout) {
-		return data.toString().trim();
-	}
-}
-
-async function execHandler(cmd, options) {
+async function exec(cmd, options: any = {}) {
 	const queries = [];
 
 	const matches = cmd.matchAll(/#{([\w\-]+) ([\w\-]+)}/g);
@@ -115,8 +100,26 @@ async function execHandler(cmd, options) {
 	await Promise.all(queries);
 
 	if (options.dry) return console.log(cmd);
+	return proc.exec(cmd);
+}
 
-	const child = proc.exec(cmd);
+async function getHandler(mod, id, options) {
+	if (!modules[mod]) throw new Error(`Group not found: ${mod}`);
+	if (!modules[mod][id]) throw new Error(`ID not found in group: ${id}`);
+	const cmd = modules[mod][id];
+
+	const list = await exec(cmd, options);
+	const finder = proc.spawn(options.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
+
+	list.stdout.pipe(finder.stdin);
+
+	for await (const data of finder.stdout) {
+		return data.toString().trim();
+	}
+}
+
+async function execHandler(cmd, options) {
+	const child = await exec(cmd, options);
 	child.stdout.pipe(process.stdout);
 }
 
