@@ -24,6 +24,20 @@ async function main() {
 		.alias('h', 'help')
 		.alias('v', 'version')
 		.command(
+			'list [module]',
+			'List all available profiles.',
+			{},
+			async (argv) => {
+				let registry = modules;
+
+				if (argv.module) registry = modules[argv.module];
+
+				for (const mod of Object.keys(registry)) {
+					console.log(mod);
+				}
+			},
+		)
+		.command(
 			'get <id>',
 			'Get one result from an input list for a given <id>, typically via user input through a fuzzy finder.',
 			{
