@@ -28,17 +28,16 @@ async function main() {
 			'List all available profiles.',
 			{},
 			async (argv) => {
-				let registry = modules;
+				let container = modules;
+				if (argv.module) container = modules[argv.module];
 
-				if (argv.module) registry = modules[argv.module];
-
-				for (const mod of Object.keys(registry)) {
+				for (const mod of Object.keys(container)) {
 					console.log(mod);
 				}
 			},
 		)
 		.command(
-			'get <id>',
+			'get <module> <id>',
 			'Get one result from an input list for a given <id>, typically via user input through a fuzzy finder.',
 			{
 				d: {
@@ -53,10 +52,9 @@ async function main() {
 				},
 			},
 			async (argv) => {
-				const [ group, id ] = argv.id.split(':');
-				if (!modules[group]) throw new Error(`Group not found: ${group}`);
-				if (!modules[group][id]) throw new Error(`ID not found in group: ${id}`);
-				const cmd = modules[group][id];
+				if (!modules[argv.module]) throw new Error(`Group not found: ${argv.module}`);
+				if (!modules[argv.module][argv.id]) throw new Error(`ID not found in group: ${argv.id}`);
+				const cmd = modules[argv.module][argv.id];
 
 				const list = proc.exec(cmd);
 				const finder = proc.spawn(argv.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
