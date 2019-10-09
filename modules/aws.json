@@ -1,0 +1,3 @@
+{
+	"profile": "cat ~/.aws/credentials | grep '^\\[' | sed -E 's;(\\[|\\]);;g'"
+}

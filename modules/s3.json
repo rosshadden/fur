@@ -1,0 +1,4 @@
+{
+	"bucket": "aws s3 --profile=#{aws profile} ls | awk '{ print $3 }'",
+	"file": "aws s3 --profile=#{aws profile} ls s3://#{s3 bucket}"
+}

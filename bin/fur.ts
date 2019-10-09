@@ -6,6 +6,7 @@ const pkg = require('../package.json');
 const proc = require('child_process');
 const yargs = require('yargs');
 
+const cache = {};
 const modules = {};
 
 async function init() {
@@ -63,6 +64,14 @@ async function main() {
 			},
 		)
 		.command(
+			'set <id>',
+			'Set default for a given <id>.',
+			{},
+			(argv) => {
+				console.log('set', argv);
+			},
+		)
+		.command(
 			'exec <cmd>',
 			`Execute command, fulfilling substitution using \`${pkg.name} get\`.`,
 			{
@@ -106,7 +115,16 @@ async function exec(cmd, options: any = {}) {
 async function getHandler(mod, id, options) {
 	if (!modules[mod]) throw new Error(`Group not found: ${mod}`);
 	if (!modules[mod][id]) throw new Error(`ID not found in group: ${id}`);
+
 	const cmd = modules[mod][id];
+	const key = `${mod}:${id}`;
+	// console.log('cmd:', key, cmd);
+
+	// console.log('CACHE CHECK', key);
+	if (cache[key]) {
+		// console.log('CACHE GET', key, cache[key]);
+		return cache[key];
+	}
 
 	const list = await exec(cmd, options);
 	const finder = proc.spawn(options.finder, [], { stdio: [ 'pipe', 'pipe', 'inherit' ] });
@@ -114,7 +132,10 @@ async function getHandler(mod, id, options) {
 	list.stdout.pipe(finder.stdin);
 
 	for await (const data of finder.stdout) {
-		return data.toString().trim();
+		const result = data.toString().trim();
+		cache[key] = result;
+		// console.log('CACHE SET', key, result);
+		return result;
 	}
 }
 
